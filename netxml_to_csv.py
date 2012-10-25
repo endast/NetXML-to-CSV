@@ -26,14 +26,14 @@ def run():
 
             print "[+] Parsing '%s'." % input_file_name
             sys.stdout.write("[+] Outputting to '%s' " % output_file_name)
-            output.write("BSSID,Channel,Privacy,Ciper,Auth,Power,ESSID\n")
+            output.write("Item,BSSID,Channel,Privacy,Cipher,Auth,Power,ESSID,Manuf\n")
             result, clients = parse_net_xml(doc)
             output.write(result)
             output.write("\n")
-            output.write("ClientMAC, Power, BSSID, ESSID\n")
-            for client_list in clients:
-                for client in client_list:
-                    output.write("%s,%s,%s,%s\n" % (client[0], client[1], client[2], client[3]))
+#            output.write("ClientMAC, Power, BSSID, ESSID\n")
+#            for client_list in clients:
+#                for client in client_list:
+#                    output.write("%s,%s,%s,%s\n" % (client[0], client[1], client[2], client[3]))
             sys.stdout.write(" Complete.\r\n")
             
 def parse_net_xml(doc):
@@ -43,7 +43,8 @@ def parse_net_xml(doc):
     tenth = total/10
     count = 0
     clients = list()
-    
+    myItem=1
+
     for network in doc.getiterator("wireless-network"):
         count += 1
         if (count % tenth) == 0:
@@ -51,7 +52,8 @@ def parse_net_xml(doc):
         type = network.attrib["type"]
         channel = network.find('channel').text
         bssid = network.find('BSSID').text
-        
+        manuf = network.find('manuf').text
+
         if type == "probe" or channel == "0":
             continue 
         
@@ -101,8 +103,9 @@ def parse_net_xml(doc):
         if ssid is not None:
             essid_text = network.find('SSID').find('essid').text
             
-        # print "%s,%s,%s,%s,%s,%s,%s\n" % (bssid, channel, privacy, cipher, auth, dbm, essid_text)
-        result += "%s,%s,%s,%s,%s,%s,%s\n" % (bssid, channel, privacy, cipher, auth, dbm, essid_text)
+        # print "%s,%s,%s,%s,%s,%s,%s,%s\n" % (bssid, channel, privacy, cipher, auth, dbm, essid_text, manuf)
+        result += "%d,%s,%s,%s,%s,%s,%s,%s,%s\n" % (myItem, bssid, channel, privacy, cipher, auth, dbm, essid_text, manuf)
+	myItem+=1
 
         c_list = associatedClients(network, bssid, essid_text)
         if c_list is not None:
