@@ -53,7 +53,7 @@ def parse_net_xml(doc):
         bssid = network.find('BSSID').text
         manuf = network.find('manuf').text
 
-        if type == "probe" or channel == "0":
+        if network_type == "probe" or channel == "0":
             continue 
         
         encryption = network.getiterator('encryption')
