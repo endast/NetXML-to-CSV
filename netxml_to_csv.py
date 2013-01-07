@@ -1,6 +1,5 @@
 #!/usr/bin/python
 from lxml import etree
-import os
 import sys
 
 def run():
