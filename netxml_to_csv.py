@@ -25,7 +25,7 @@ def run():
 
             print "[+] Parsing '%s'." % input_file_name
             sys.stdout.write("[+] Outputting to '%s' " % output_file_name)
-            output.write("Item,BSSID,Channel,Privacy,Cipher,Auth,Power,ESSID,Manuf\n")
+            output.write("Item,BSSID,Channel,Privacy,Cipher,Auth,Power,ESSID,Manuf,Longitude,Latitude\n")
             result = parse_net_xml(doc)
             output.write(result)
             output.write("\n")
@@ -43,11 +43,21 @@ def parse_net_xml(doc):
         count += 1
         if (count % tenth) == 0:
             sys.stdout.write(".")
-        type = network.attrib["type"]
+        
+        network_type = network.attrib["type"]
         channel = network.find('channel').text
         bssid = network.find('BSSID').text
         manuf = network.find('manuf').text
-
+        
+        gps = network.find('gps-info')
+                
+        latitude = "0.0"
+        longitude = "0.0"
+        
+        if gps is not None:
+            latitude = gps.find('avg-lat').text
+            longitude = gps.find('avg-lon').text
+        
         if network_type == "probe" or channel == "0":
             continue 
         
@@ -82,6 +92,7 @@ def parse_net_xml(doc):
         
                 
         power = network.find('snr-info')
+        
         dbm = ""
         if power is not None:
             dbm = power.find('max_signal_dbm').text
@@ -97,8 +108,7 @@ def parse_net_xml(doc):
         if ssid is not None:
             essid_text = network.find('SSID').find('essid').text
             
-        # print "%s,%s,%s,%s,%s,%s,%s,%s\n" % (bssid, channel, privacy, cipher, auth, dbm, essid_text, manuf)
-        result += "%d,%s,%s,%s,%s,%s,%s,%s,%s\n" % (myItem, bssid, channel, privacy, cipher, auth, dbm, essid_text, manuf)
+        result += "%d,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s\n" % (myItem, bssid, channel, privacy, cipher, auth, dbm, essid_text, manuf, longitude, latitude)
         myItem+=1
         
     return result
