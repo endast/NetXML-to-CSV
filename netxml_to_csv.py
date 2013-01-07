@@ -25,7 +25,7 @@ def run():
 
             print "[+] Parsing '%s'." % input_file_name
             sys.stdout.write("[+] Outputting to '%s' " % output_file_name)
-            output.write("Item,BSSID,Channel,Privacy,Cipher,Auth,Power,ESSID,Manuf,Longitude,Latitude\n")
+            output.write("BSSID,Channel,Privacy,Cipher,Auth,Power,ESSID,Manuf,Longitude,Latitude\n")
             result = parse_net_xml(doc)
             output.write(result)
             output.write("\n")
