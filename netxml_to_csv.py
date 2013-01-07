@@ -26,13 +26,9 @@ def run():
             print "[+] Parsing '%s'." % input_file_name
             sys.stdout.write("[+] Outputting to '%s' " % output_file_name)
             output.write("Item,BSSID,Channel,Privacy,Cipher,Auth,Power,ESSID,Manuf\n")
-            result, clients = parse_net_xml(doc)
+            result = parse_net_xml(doc)
             output.write(result)
             output.write("\n")
-#            output.write("ClientMAC, Power, BSSID, ESSID\n")
-#            for client_list in clients:
-#                for client in client_list:
-#                    output.write("%s,%s,%s,%s\n" % (client[0], client[1], client[2], client[3]))
             sys.stdout.write(" Complete.\r\n")
             
 def parse_net_xml(doc):
@@ -41,8 +37,7 @@ def parse_net_xml(doc):
     total = len(list(doc.getiterator("wireless-network")))
     tenth = total/10
     count = 0
-    clients = list()
-    myItem=1
+    myItem = 1
 
     for network in doc.getiterator("wireless-network"):
         count += 1
@@ -104,30 +99,9 @@ def parse_net_xml(doc):
             
         # print "%s,%s,%s,%s,%s,%s,%s,%s\n" % (bssid, channel, privacy, cipher, auth, dbm, essid_text, manuf)
         result += "%d,%s,%s,%s,%s,%s,%s,%s,%s\n" % (myItem, bssid, channel, privacy, cipher, auth, dbm, essid_text, manuf)
-	myItem+=1
-
-        c_list = associatedClients(network, bssid, essid_text)
-        if c_list is not None:
-            clients.append(c_list)
+        myItem+=1
         
-    return result, clients
-
-def associatedClients(network, bssid, essid_text):
-    clients = network.getiterator('wireless-client')
-    
-    if clients is not None:
-        client_info = list()
-        for client in clients:
-            mac = client.find('client-mac')
-            if mac is not None:
-                client_mac = mac.text
-                power = client.find('snr-info').find('max_signal_dbm')
-                if power is not None:
-                    client_power = power.text
-                    c = client_mac, client_power, bssid, essid_text
-                    client_info.append(c)
-
-        return client_info
+    return result
 
 if __name__ == "__main__":
     run()          
