@@ -37,7 +37,6 @@ def parse_net_xml(doc):
     total = len(list(doc.getiterator("wireless-network")))
     tenth = total/10
     count = 0
-    myItem = 1
 
     for network in doc.getiterator("wireless-network"):
         count += 1
@@ -108,8 +107,7 @@ def parse_net_xml(doc):
         if ssid is not None:
             essid_text = network.find('SSID').find('essid').text
             
-        result += "%d,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s\n" % (myItem, bssid, channel, privacy, cipher, auth, dbm, essid_text, manuf, longitude, latitude)
-        myItem+=1
+        result += "%s,%s,%s,%s,%s,%s,%s,%s,%s,%s\n" % (bssid, channel, privacy, cipher, auth, dbm, essid_text, manuf, longitude, latitude)
         
     return result
 
