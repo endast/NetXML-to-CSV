@@ -38,7 +38,41 @@ def run():
             output.write(result)
             output.write("\n")
             sys.stdout.write(" Complete.\r\n")
-            
+
+def net_encryption(network):
+    
+        encryption = network.getiterator('encryption')
+
+        privacy = ""
+        cipher = ""
+        auth = ""
+        if encryption is not None:
+            for item in encryption:
+                if item.text.startswith("WEP"):
+                    privacy = "WEP"
+                    cipher = "WEP"
+                    auth = ""
+                    break
+                elif item.text.startswith("WPA"):
+                    if item.text.endswith("PSK"):
+                        auth = "PSK"
+                    elif item.text.endswith("AES-CCM"):
+                        cipher = "CCMP " + cipher
+                    elif item.text.endswith("TKIP"):
+                        cipher += "TKIP "
+                elif item.text == "None":
+                    privacy = "OPN"
+
+        cipher = cipher.strip()
+        
+        if cipher.find("CCMP") > -1:
+            privacy = "WPA2"
+
+        if cipher.find("TKIP") > -1:
+            privacy += "WPA"
+
+        return (privacy, cipher, auth)
+
 def parse_net_xml(doc):
     result = ""
 
@@ -68,35 +102,8 @@ def parse_net_xml(doc):
         if network_type == "probe" or channel == "0":
             continue 
         
-        encryption = network.getiterator('encryption')
-        privacy = ""
-        cipher = ""
-        auth = ""
-        if encryption is not None:
-            for item in encryption:
-                if item.text.startswith("WEP"):
-                    privacy = "WEP"
-                    cipher = "WEP"
-                    auth = ""
-                    break
-                elif item.text.startswith("WPA"):
-                    if item.text.endswith("PSK"):
-                        auth = "PSK"
-                    elif item.text.endswith("AES-CCM"):
-                        cipher = "CCMP " + cipher
-                    elif item.text.endswith("TKIP"):
-                        cipher += "TKIP "
-                elif item.text == "None":
-                    privacy = "OPN"
-
-        cipher = cipher.strip()
-        
-        if cipher.find("CCMP") > -1:
-            privacy = "WPA2"
-
-        if cipher.find("TKIP") > -1:
-            privacy += "WPA"
-        
+        # Get the network encryption
+        privacy, cipher, auth = net_encryption(network)
                 
         power = network.find('snr-info')
         
