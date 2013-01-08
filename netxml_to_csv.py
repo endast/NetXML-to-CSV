@@ -90,7 +90,16 @@ def net_singal(network):
     return dbm
 
 def net_gps(network):
-    pass
+    gps = network.find('gps-info')
+                
+    latitude = "0.0"
+    longitude = "0.0"
+        
+    if gps is not None:
+        latitude = gps.find('avg-lat').text
+        longitude = gps.find('avg-lon').text
+        
+    return (latitude, longitude)        
 
 def parse_net_xml(doc):
     result = ""
@@ -109,15 +118,9 @@ def parse_net_xml(doc):
         bssid = network.find('BSSID').text
         manuf = network.find('manuf').text
         
-        gps = network.find('gps-info')
+        # Get the network lat/lon                    
+        latitude, longitude = net_gps(network)
                 
-        latitude = "0.0"
-        longitude = "0.0"
-        
-        if gps is not None:
-            latitude = gps.find('avg-lat').text
-            longitude = gps.find('avg-lon').text
-        
         if network_type == "probe" or channel == "0":
             continue 
         
