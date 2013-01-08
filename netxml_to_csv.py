@@ -1,15 +1,23 @@
 #!/usr/bin/python
 from lxml import etree
 import sys
+import os
 
 def run():
     print "[*] NETXML to CSV Converter by Meatballs"
     
-    if len(sys.argv) != 3:
-        print "[*] Usage: %s input output" % sys.argv[0]
+    if len(sys.argv) == 1 or len(sys.argv) > 3:
+        print "[*] Usage: use input file name for output: %s input" % sys.argv[0]
+        print "[*] Custom output: %s input output" % sys.argv[0]
     else:
-        output_file_name = sys.argv[2]
         input_file_name = sys.argv[1]
+        
+        if len(sys.argv) == 3:
+            output_file_name = sys.argv[2]
+        else:
+            outFileName = os.path.splitext(sys.argv[1])
+            output_file_name = outFileName[0] + ".csv"
+        
         if input_file_name != output_file_name:
             try:
                 output = file(output_file_name, 'w')
