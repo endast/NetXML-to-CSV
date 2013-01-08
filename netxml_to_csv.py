@@ -72,6 +72,25 @@ def net_encryption(network):
             privacy += "WPA"
 
         return (privacy, cipher, auth)
+    
+def net_singal(network):
+    power = network.find('snr-info')
+        
+    dbm = ""
+
+    if power is not None:
+        dbm = power.find('max_signal_dbm').text
+
+    if int(dbm) > 1:
+        dbm = power.find('last_signal_dbm').text
+
+    if int(dbm) > 1:
+        dbm = power.find('min_signal_dbm').text
+
+    return dbm
+
+def net_gps(network):
+    pass
 
 def parse_net_xml(doc):
     result = ""
@@ -102,20 +121,11 @@ def parse_net_xml(doc):
         if network_type == "probe" or channel == "0":
             continue 
         
-        # Get the network encryption
+        # Get network encryption
         privacy, cipher, auth = net_encryption(network)
                 
-        power = network.find('snr-info')
-        
-        dbm = ""
-        if power is not None:
-            dbm = power.find('max_signal_dbm').text
-
-        if int(dbm) > 1:
-            dbm = power.find('last_signal_dbm').text
-
-        if int(dbm) > 1:
-            dbm = power.find('min_signal_dbm').text
+        # Get network signal
+        dbm = net_singal(network)
 
         ssid = network.find('SSID')
         essid_text = ""
